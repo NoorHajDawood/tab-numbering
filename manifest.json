@@ -1,15 +1,15 @@
 {
   "manifest_version": 3,
   "name": "Tab Numbering",
-  "description": "Displays the tab number (in superscript) for all open tabs.",
-  "version": "0.2.0",
+  "description": "Displays tab numbers in titles (choose 1–8 or infinite).",
+  "version": "0.3.0",
   "permissions": [
     "tabs",
-    "scripting"
+    "scripting",
+    "storage"
   ],
   "host_permissions": [
-    "http://*/*",
-    "https://*/*"
+    "<all_urls>"
   ],
   "background": {
     "page": "background.html"
@@ -18,7 +18,11 @@
     "128": "tab-numbering.png"
   },
   "action": {
-    "default_title": "Tab Numbering"
+    "default_popup": "popup.html",
+    "default_title": "Tab Numbering",
+    "default_icon": {
+      "128": "tab-numbering.png"
+    }
   },
   "browser_specific_settings": {
     "gecko": {

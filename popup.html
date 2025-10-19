@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+    body {
+      background-color: #1e1e1e;
+      color: #f0f0f0;
+      font-family: "Inter", sans-serif;
+      padding: 14px;
+      min-width: 200px;
+      text-align: center;
+    }
+
+    h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #2a2a2a;
+      border-radius: 8px;
+      padding: 10px 12px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.3);
+    }
+
+    label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #ddd;
+    }
+
+    input[type="checkbox"] {
+      width: 40px;
+      height: 20px;
+      appearance: none;
+      background-color: #555;
+      border-radius: 20px;
+      position: relative;
+      outline: none;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    input[type="checkbox"]::before {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      background-color: #fff;
+      border-radius: 50%;
+      transition: transform 0.2s ease;
+    }
+
+    input[type="checkbox"]:checked {
+      background-color: #0078d7;
+    }
+
+    input[type="checkbox"]:checked::before {
+      transform: translateX(20px);
+    }
+
+    p {
+      font-size: 12px;
+      color: #888;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h3>Tab Numbering</h3>
+  <div class="toggle-container">
+    <label for="infiniteTabNumberingToggle">Infinite numbering</label>
+    <input type="checkbox" id="infiniteTabNumberingToggle">
+  </div>
+  <p>Off → Only tabs 1–8 numbered</p>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

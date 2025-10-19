@@ -2,25 +2,29 @@
 const browserApi = typeof browser !== 'undefined' ? browser : chrome;
 
 function toSuperscript(num) {
-  const map = {
-    0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴',
-    5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹'
-  };
+  const map = { 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹' };
   return String(num + 1) // start from 1
     .split('')
     .map(d => map[d] || d)
     .join('');
 }
 
+async function getMode() {
+  const data = await browserApi.storage.local.get('infiniteTabNumberingMode');
+  return !!data.infiniteTabNumberingMode;
+}
+
 // Update a single tab’s title with its index
 async function update(tab) {
   if (!tab || !tab.title || typeof tab.index !== 'number') return;
 
-  let newTitle = tab.title;
-  newTitle = newTitle.replace(/^[⁰¹²³⁴⁵⁶⁷⁸⁹]+/, '');
+  let newTitle = tab.title.replace(/^[⁰¹²³⁴⁵⁶⁷⁸⁹]+\s*/, '');
+  let infinite = await getMode();
 
-  const prefix = toSuperscript(tab.index);
-  newTitle = prefix + ' ' + newTitle.trim();
+  if (infinite || tab.index <= 8) {
+    const prefix = toSuperscript(tab.index);
+    newTitle = prefix + ' ' + newTitle.trim();
+  }
 
   try {
     await browserApi.scripting.executeScript({
@@ -52,6 +56,17 @@ browserApi.tabs.onRemoved.addListener(() => {
 });
 browserApi.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.title) update(tab);
+});
+browserApi.runtime.onMessage.addListener(msg => {
+  if (msg.type === "renumberTabs") updateAll();
+});
+
+// Ensure storage default
+browserApi.runtime.onInstalled.addListener(() => {
+  browserApi.storage.local.get("infiniteTabNumberingMode", data => {
+    if (data.infiniteTabNumberingMode === undefined)
+      browserApi.storage.local.set({ infiniteTabNumberingMode: false });
+  });
 });
 
 // Run once on startup
