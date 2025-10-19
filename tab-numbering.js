@@ -1,53 +1,58 @@
-const browser = window.browser || window.chrome
+// Use browser.* API with Chrome fallback for cross-browser support
+const browserApi = typeof browser !== 'undefined' ? browser : chrome;
 
-var update = function(details) {
-  var oldTitle = details.title
-  var newTitle = oldTitle
+function toSuperscript(num) {
+  const map = {
+    0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴',
+    5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹'
+  };
+  return String(num + 1) // start from 1
+    .split('')
+    .map(d => map[d] || d)
+    .join('');
+}
 
-  if(!newTitle) {
-    return
-  }
+// Update a single tab’s title with its index
+async function update(tab) {
+  if (!tab || !tab.title || typeof tab.index !== 'number') return;
 
-  var numbers = ['¹','²','³','⁴','⁵','⁶','⁷','⁸','⁹']
+  let newTitle = tab.title;
+  newTitle = newTitle.replace(/^[⁰¹²³⁴⁵⁶⁷⁸⁹]+/, '');
 
-  if (newTitle && numbers.includes(newTitle[0])) {
-    newTitle = newTitle.substr(1)
-  }
+  const prefix = toSuperscript(tab.index);
+  newTitle = prefix + ' ' + newTitle.trim();
 
-  if(details.index < 8) {
-    newTitle = numbers[details.index] + newTitle
-  }
-  if(oldTitle !== newTitle) {
-    try {
-      browser.tabs.executeScript(
-        details.id,
-        {
-          code : `document.title = ${JSON.stringify(newTitle)}`
-        }
-      )
-      console.log("executed: " + details.id)
-    } catch(e) {
-      console.log("Tab numbering error:", e)
-    }
+  try {
+    await browserApi.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: (title) => { document.title = title; },
+      args: [newTitle]
+    });
+  } catch (e) {
+    console.debug('Tab numbering error:', e);
   }
 }
 
-function updateAll() {
-  browser.tabs.query({}, function(tabs) {
-    tabs.forEach(update)
-  })
+// Update all open tabs
+async function updateAll() {
+  const tabs = await browserApi.tabs.query({});
+  for (const tab of tabs) {
+    await update(tab);
+  }
 }
 
-browser.tabs.onMoved.addListener(updateAll)
-// firefox seems to do this inconsistently, thus this setTimeout kludge:
-browser.tabs.onRemoved.addListener(() => {
-  updateAll()
-  setTimeout(updateAll, 100)
-  setTimeout(updateAll, 500)
-  setTimeout(updateAll, 1000)
-})
-browser.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-  update(tab)
-})
+// Set up event listeners
+browserApi.tabs.onMoved.addListener(updateAll);
+browserApi.tabs.onCreated.addListener(updateAll);
+browserApi.tabs.onRemoved.addListener(() => {
+  updateAll();
+  setTimeout(updateAll, 100);
+  setTimeout(updateAll, 500);
+  setTimeout(updateAll, 1000);
+});
+browserApi.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.title) update(tab);
+});
 
-updateAll()
+// Run once on startup
+updateAll();
