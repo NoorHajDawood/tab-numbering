@@ -80,10 +80,6 @@ The chosen mode is automatically saved and restored.
 The extension uses a **persistent background page** (`tab-numbering.js`) for stable storage and event handling.  
 It listens to tab lifecycle events (`onCreated`, `onMoved`, `onRemoved`, `onUpdated`) and updates titles accordingly.
 
-### Manifest
-The project uses **Manifest V2** for full compatibility with current Firefox versions.  
-Future updates may migrate to MV3 once Firefox supports `storage` and scripting APIs more consistently for persistent extensions.
-
 ---
 
 ## 🧩 Advanced Customization (Optional)
