@@ -1,29 +1,38 @@
 // Use browser.* API with Chrome fallback for cross-browser support
 const browserApi = typeof browser !== 'undefined' ? browser : chrome;
 
+const SUPERSCRIPT_MAP = { '-': '⁻', 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹' };
+
 function toSuperscript(num) {
-  const map = { 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹' };
-  return String(num + 1) // start from 1
+  return String(num) // start from 1
     .split('')
-    .map(d => map[d] || d)
+    .map(ch => SUPERSCRIPT_MAP[ch] ?? ch)
     .join('');
 }
 
 async function getMode() {
-  const data = await browserApi.storage.local.get('infiniteTabNumberingMode');
-  return !!data.infiniteTabNumberingMode;
+  const { infiniteTabNumberingMode = false } = await browserApi.storage.local.get('infiniteTabNumberingMode');
+  return infiniteTabNumberingMode;
+}
+
+async function getOffset() {
+  const { tabNumberOffset = 0 } = await browserApi.storage.local.get('tabNumberOffset');
+  return Number(tabNumberOffset) || 0;
 }
 
 // Update a single tab’s title with its index
 async function update(tab) {
   if (!tab || !tab.title || typeof tab.index !== 'number') return;
 
-  let newTitle = tab.title.replace(/^[⁰¹²³⁴⁵⁶⁷⁸⁹]+\s*/, '');
-  let infinite = await getMode();
+  let newTitle = tab.title.replace(/^[⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+\s*/, '');
+  
+  const infinite = await getMode();
+  const offset = await getOffset();
 
   if (infinite || tab.index <= 8) {
-    const prefix = toSuperscript(tab.index);
-    newTitle = prefix + ' ' + newTitle.trim();
+    const tabNumber = tab.index + 1 + offset;
+    const prefix = toSuperscript(tabNumber);
+    newTitle = `${prefix} ${newTitle.trim()}`;
   }
 
   try {
@@ -63,9 +72,14 @@ browserApi.runtime.onMessage.addListener(msg => {
 
 // Ensure storage default
 browserApi.runtime.onInstalled.addListener(() => {
-  browserApi.storage.local.get("infiniteTabNumberingMode", data => {
+  browserApi.storage.local.get('infiniteTabNumberingMode', data => {
     if (data.infiniteTabNumberingMode === undefined)
       browserApi.storage.local.set({ infiniteTabNumberingMode: false });
+  });
+
+  browserApi.storage.local.get('tabNumberOffset', data => {
+    if (data.tabNumberOffset == undefined)
+      browserApi.storage.local.set({ tabNumberOffset: 0 });
   });
 });
 

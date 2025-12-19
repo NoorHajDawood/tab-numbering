@@ -69,6 +69,22 @@
       transform: translateX(20px);
     }
 
+    input[type="number"] {
+      width: 70px;
+      background: #1e1e1e;
+      color: #f0f0f0;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 4px 6px;
+      font-size: 13px;
+      text-align: right;
+    }
+
+    input[type="number"]:focus {
+      outline: none;
+      border-color: #0078d7;
+    }
+
     p {
       font-size: 12px;
       color: #888;
@@ -83,6 +99,11 @@
     <input type="checkbox" id="infiniteTabNumberingToggle">
   </div>
   <p>Off → Only tabs 1–8 numbered</p>
+
+  <div class="toggle-container">
+      <label for="numberingOffset">Numbering offset</label>
+      <input type="number" id="numberingOffset" step="1" value="0" title="Can be negative, zero, or positive">
+  </div>
 
   <script type="module" src="popup.js"></script>
 </body>
