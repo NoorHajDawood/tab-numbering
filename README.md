@@ -1,12 +1,18 @@
 # Tab Numbering (Maintained Fork)
 
-A browser extension that adds numbering to your browser tabs — now with optional **infinite numbering**, a **dark-themed popup**, and compatibility with modern **Firefox** and **Chrome**.
+A browser extension that adds numbering to your browser tabs — compatibility with **Firefox**, possibly also **Chrome**.
 
-This fork updates and improves the original extension with:
-- ✅ Infinite tab numbering mode (optional)
-- ✅ Persistent settings (using `browser.storage.local`)
-- ✅ Updated code for Manifest V3 (for current Firefox + Chrome support)
-- ✅ Robust updates when tabs are created, moved, or removed
+---
+
+## 🧩 Features
+
+- Numbers your open tabs, adding superscript digits (¹²³⁴...) before the tab title.  
+- You can toggle between:
+  - **Classic Mode:** Only tabs 1–8 (matching <kbd>Ctrl/Cmd</kbd> + number shortcuts)
+  - **Infinite Mode:** Number all tabs, regardless of count (personally I use this alongside Vimium)
+- Updates automatically when tabs are opened, closed, or moved.
+- Works across all normal web pages (`http` and `https` URLs).
+- Offers option to set numbering offset, can be negative also. (for example, offset of value 3, tab numbers start with 3 counting up)
 
 ---
 
@@ -21,17 +27,6 @@ need to add screenshot
 
 **Example – Firefox**
 ![Screenshot](./screenshot-firefox.png)
-
----
-
-## 🧩 Features
-
-- Numbers your open tabs, adding superscript digits (¹²³⁴...) before the tab title.  
-- You can toggle between:
-  - **Classic Mode:** Only tabs 1–8 (matching <kbd>Ctrl/Cmd</kbd> + number shortcuts)
-  - **Infinite Mode:** Number all tabs, regardless of count (personally I use this alongside Vimium)
-- Updates automatically when tabs are opened, closed, or moved.
-- Works across all normal web pages (`http` and `https` URLs).
 
 ---
 
